@@ -1,0 +1,14 @@
+# Abhängigkeiten (werden mit "npm install" erzeugt)
+node_modules/
+node_modules.nosync/
+
+# Gebaute Datei (wird mit "npm run dev" erzeugt, gehört nicht ins Repo)
+main.js
+
+# Persönliche Daten und Einstellungen des Plugins im Vault
+data.json
+lokal.config.json
+
+# Sonstiges
+.DS_Store
+*.log

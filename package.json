@@ -1,0 +1,23 @@
+{
+  "name": "cadence",
+  "version": "0.0.1",
+  "description": "Ein Task- und Terminmanagement-Plugin für einen geregelten Rhythmus und Klarheit in deinem Leben. Aufgaben und Termine als Notizen oder direkt im Text, mit Synchronisation zum iCloud-Kalender.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "npm run typecheck && node esbuild.config.mjs production",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "rrule": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.25.0",
+    "obsidian": "^1.13.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "newCadence",
+  "name": "newCadence",
+  "version": "0.0.1",
+  "minAppVersion": "1.11.4",
+  "description": "Ein Task- und Terminmanagement-Plugin für einen geregelten Rhythmus und Klarheit in deinem Leben. Aufgaben und Termine als Notizen oder direkt im Text, mit Synchronisation zum iCloud-Kalender.",
+  "author": "David",
+  "authorUrl": "",
+  "isDesktopOnly": false
+}
