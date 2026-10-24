@@ -26,6 +26,7 @@ import { rrulestr } from "rrule";
 import { datumTeil } from "../datum/datum-teile";
 import { datumAlsUtc, utcAlsDatumText } from "../datum/utc-datum";
 import { ankerKappung } from "./anker-kappung";
+import { ankerKappungsHaeufigkeit } from "./regel-art";
 import {
   rruleFuerBerechnung,
   rruleNormalisieren,
@@ -56,18 +57,15 @@ export function naechstesVorkommen(rrule: string, geplanterStart: string): Naech
   try {
     const normalisiert = rruleNormalisieren(rrule);
     const parameter = rruleParameterLesen(normalisiert);
-    const haeufigkeit = parameter.FREQ;
     const intervall = parameter.INTERVAL ? parseInt(parameter.INTERVAL, 10) : 1;
     if (!Number.isFinite(intervall) || intervall < 1) return null;
-
-    const hatWochentage = !!parameter.BYDAY;
-    const hatMonatstag = !!parameter.BYMONTHDAY;
 
     let naechsterStart: string | null;
     let neueRrule = normalisiert;
 
-    if ((haeufigkeit === "MONTHLY" || haeufigkeit === "YEARLY") && !hatWochentage && !hatMonatstag) {
-      const kappung = ankerKappung(haeufigkeit, intervall, geplanterStart, parameter);
+    const ankerHaeufigkeit = ankerKappungsHaeufigkeit(parameter);
+    if (ankerHaeufigkeit) {
+      const kappung = ankerKappung(ankerHaeufigkeit, intervall, geplanterStart, parameter);
       naechsterStart = kappung.naechsterStart;
       if (kappung.neueParameter) neueRrule = rruleParameterAlsText(kappung.neueParameter);
     } else {
