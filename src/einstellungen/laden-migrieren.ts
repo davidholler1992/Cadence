@@ -5,7 +5,7 @@
  *           fällt auf den Standardwert zurück. Spätere Änderungen am Format
  *           werden hier an einer Stelle aufgefangen (Migration).
  * Beispiel: einstellungenAusRohdaten({ inlineOrdner: ["/Test/"], tagTodo: "#Aufgabe" })
- *             →  { inlineOrdner: ["Test"], tagTodo: "Aufgabe", tagTermin: "termin" }
+ *             →  { aufgabenOrdner: [], terminOrdner: [], inlineOrdner: ["Test"], tagTodo: "Aufgabe", tagTermin: "termin" }
  */
 
 import { ordnerBereinigen } from "../kern/text/ordner";
@@ -21,15 +21,19 @@ export function tagNameBereinigen(wert: unknown, ersatz: string): string {
   return sauber !== "" && GUELTIGER_TAG.test(sauber) ? sauber : ersatz;
 }
 
+/** Eine Liste von Ordnerpfaden. Keine Liste: leer. Nicht-Texte werden ignoriert. */
+function ordnerListe(wert: unknown): string[] {
+  if (!Array.isArray(wert)) return [];
+  return ordnerBereinigen(wert.filter((eintrag): eintrag is string => typeof eintrag === "string"));
+}
+
 export function einstellungenAusRohdaten(rohdaten: unknown): CadenceEinstellungen {
   const daten = (typeof rohdaten === "object" && rohdaten !== null ? rohdaten : {}) as Record<string, unknown>;
 
-  const ordner = Array.isArray(daten.inlineOrdner)
-    ? ordnerBereinigen(daten.inlineOrdner.filter((eintrag): eintrag is string => typeof eintrag === "string"))
-    : STANDARD_EINSTELLUNGEN.inlineOrdner;
-
   return {
-    inlineOrdner: ordner,
+    aufgabenOrdner: ordnerListe(daten.aufgabenOrdner),
+    terminOrdner: ordnerListe(daten.terminOrdner),
+    inlineOrdner: ordnerListe(daten.inlineOrdner),
     tagTodo: tagNameBereinigen(daten.tagTodo, STANDARD_EINSTELLUNGEN.tagTodo),
     tagTermin: tagNameBereinigen(daten.tagTermin, STANDARD_EINSTELLUNGEN.tagTermin),
   };

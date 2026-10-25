@@ -1,22 +1,38 @@
 import { describe, expect, it } from "vitest";
 import { einstellungenAusRohdaten, tagNameBereinigen } from "./laden-migrieren";
 
+const STANDARD = { aufgabenOrdner: [], terminOrdner: [], inlineOrdner: [], tagTodo: "todo", tagTermin: "termin" };
+
 describe("einstellungenAusRohdaten", () => {
   it("liefert die Standardwerte, wenn nichts gespeichert ist", () => {
-    const standard = { inlineOrdner: [], tagTodo: "todo", tagTermin: "termin" };
-    expect(einstellungenAusRohdaten(null)).toEqual(standard);
-    expect(einstellungenAusRohdaten(undefined)).toEqual(standard);
-    expect(einstellungenAusRohdaten("Unsinn")).toEqual(standard);
-    expect(einstellungenAusRohdaten({})).toEqual(standard);
+    expect(einstellungenAusRohdaten(null)).toEqual(STANDARD);
+    expect(einstellungenAusRohdaten(undefined)).toEqual(STANDARD);
+    expect(einstellungenAusRohdaten("Unsinn")).toEqual(STANDARD);
+    expect(einstellungenAusRohdaten({})).toEqual(STANDARD);
   });
 
   it("übernimmt gültige Werte und bereinigt sie", () => {
     const einstellungen = einstellungenAusRohdaten({
+      aufgabenOrdner: ["/Aufgaben/"],
+      terminOrdner: ["Termine", "  "],
       inlineOrdner: ["/Test/Inline/", "", "Daily"],
       tagTodo: "#Aufgabe",
       tagTermin: " Treffen ",
     });
-    expect(einstellungen).toEqual({ inlineOrdner: ["Test/Inline", "Daily"], tagTodo: "Aufgabe", tagTermin: "Treffen" });
+    expect(einstellungen).toEqual({
+      aufgabenOrdner: ["Aufgaben"],
+      terminOrdner: ["Termine"],
+      inlineOrdner: ["Test/Inline", "Daily"],
+      tagTodo: "Aufgabe",
+      tagTermin: "Treffen",
+    });
+  });
+
+  it("liest Einstellungen aus einer älteren Version ohne die neuen Ordner", () => {
+    const einstellungen = einstellungenAusRohdaten({ inlineOrdner: ["Test"], tagTodo: "todo", tagTermin: "termin" });
+    expect(einstellungen.aufgabenOrdner).toEqual([]);
+    expect(einstellungen.terminOrdner).toEqual([]);
+    expect(einstellungen.inlineOrdner).toEqual(["Test"]);
   });
 
   it("ignoriert Einträge, die keine Texte sind", () => {
@@ -25,6 +41,7 @@ describe("einstellungenAusRohdaten", () => {
 
   it("fällt bei einem Ordner-Wert, der keine Liste ist, auf leer zurück", () => {
     expect(einstellungenAusRohdaten({ inlineOrdner: "Daily" }).inlineOrdner).toEqual([]);
+    expect(einstellungenAusRohdaten({ aufgabenOrdner: "Aufgaben" }).aufgabenOrdner).toEqual([]);
   });
 
   it("fällt bei ungültigen Tag-Namen auf die Standardwerte zurück", () => {
